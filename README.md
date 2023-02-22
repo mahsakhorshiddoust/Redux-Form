@@ -3,7 +3,7 @@
   <head>
   </head>
   <body>
-    <h1>Project Name</h1>
+    <h1>Login Form with Redux</h1>
     <p>
       This project is a form built with React Native Expo and Redux. The form allows users to sign up and log in. It also validates the email address before submission. The project uses a number of different libraries and APIs, including React Native, React Native Expo, Redux, and the Hopper API.
     </p>
