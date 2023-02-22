@@ -1,63 +1,24 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  setUserEmail,
-  setUserPassword,
-  setUserName,
-} from "../../store/actions";
+import { useDispatch, useSelector } from "react-redux";
 import Container from "../components/Container";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Title from "../components/Title";
-import { Alert } from "react-native";
-import { API_URL } from "../constants";
+import { updateInputState, handleSignUp } from "../utils/helpers";
 
 const SignUpScreen = () => {
   const dispatch = useDispatch();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const email = useSelector((state) => state.signup.email);
+  const password = useSelector((state) => state.signup.password);
+  const name = useSelector((state) => state.signup.name);
 
-  const updateInputState = (value, name) => {
-    if (name === "email") {
-      setEmail(value);
-      dispatch(setUserEmail(value));
-    } else if (name === "password") {
-      setPassword(value);
-      dispatch(setUserPassword(value));
-    } else if (name === "name") {
-      setName(value);
-      dispatch(setUserName(value));
-    }
+  // Handle input change
+  const handleInputChange = (value, name) => {
+    updateInputState(name, value, dispatch);
   };
 
-  const signUp = async () => {
-    const formData = new FormData();
-    formData.append("Email", email);
-    formData.append("Password", password);
-    formData.append("Name", name);
-    formData.append("PlanGroup", "default");
-    formData.append("UtmSource", "");
-    formData.append("UtmMedium", "");
-    formData.append("UtmCampaign", "");
-    formData.append("WeekMode", new Date().getDay() === 0 ? 0 : 1);
-    formData.append("WithAuthToken", true);
-
-    setIsLoading(true);
-
-    const res = await fetch(`${API_URL}/api/user/`, {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    console.log(data);
-    if (data.success) {
-      Alert.alert("Success", data.message);
-    } else {
-      Alert.alert("Error", data.message);
-    }
-    setIsLoading(false);
+  // Handle sign up a new user
+  const signUp = () => {
+    handleSignUp(email, password, name, dispatch);
   };
 
   return (
@@ -66,21 +27,21 @@ const SignUpScreen = () => {
       <Input
         placeholder={"Email"}
         value={email}
-        onChange={(value) => updateInputState(value, "email")}
+        onChange={(value) => handleInputChange(value, "email")}
       />
       <Input
         placeholder={"Password"}
         value={password}
         secureTextEntry={true}
         autoCapitalize={"none"}
-        onChange={(value) => updateInputState(value, "password")}
+        onChange={(value) => handleInputChange(value, "password")}
       />
       <Input
         placeholder={"Name"}
         value={name}
-        onChange={(value) => updateInputState(value, "name")}
+        onChange={(value) => handleInputChange(value, "name")}
       />
-      <Button text={"Sign Up"} onPress={signUp} />
+      <Button text={"Sign Up"} onPress={() => signUp(email, password, name)} />
     </Container>
   );
 };
